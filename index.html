@@ -1,429 +1,418 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Farmacia saude+</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <title>Ficha de Personagem - Sistema Elisio V2</title>
+    <style>
+        :root {
+            --primary-color: #4a2c82;
+            --secondary-color: #7b5ac8;
+            --accent-color: #e6b31e;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 5px;
+            margin: 20px 0 15px;
+        }
+
+        .character-sheet {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-color);
+        }
+
+        .btn-save { background-color: var(--success-color); }
+        .btn-delete { background-color: var(--danger-color); }
+        .btn-export { background-color: var(--warning-color); color: #333; }
+        .btn-import { background-color: var(--info-color); }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show { transform: translateX(0); }
+        .notification.success { background-color: var(--success-color); }
+        .notification.error { background-color: var(--danger-color); }
+        .notification.info { background-color: var(--info-color); }
+
+        @media (max-width: 768px) {
+            .grid-container { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
-
 <body>
+    <div class="container">
+        <header>
+            <h1>Sistema Elisio V2</h1>
+            <p>Ficha de Personagem</p>
+        </header>
 
-    <!--modal-->
-
-    <div class="modal fade" id="modalLogin" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Acesse sua conta de cliente</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="character-sheet">
+            <div class="section">
+                <h2>Informações Básicas</h2>
+                <div class="grid-container">
+                    <div class="form-group">
+                        <label for="character-name">Nome do Personagem</label>
+                        <input type="text" id="character-name" placeholder="Ex: Aric Blackthorn">
+                    </div>
+                    <div class="form-group">
+                        <label for="player-name">Jogador</label>
+                        <input type="text" id="player-name" placeholder="Seu nome">
+                    </div>
+                    <div class="form-group">
+                        <label for="character-level">Nível</label>
+                        <input type="number" id="character-level" min="1" max="20" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="character-xp">Experiência (XP)</label>
+                        <input type="number" id="character-xp" min="0" value="0">
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="mb-3">
-                            <label for="ImputEmail" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="ImputEmail"
-                                aria-describedby="emailHelp">
-                        </div>
-                        <div class="mb-3">
-                            <label for="ImputPassword" class="form-label">Senha</label>
-                            <input type="password" class="form-control" id="ImputPassword">
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary">Cadastre-se</button>
-                        <div class="form-text">Já tem conta ? <a href="">Registre-se</a></div>
+            </div>
 
-                        <div class="form-text">Esqueceo a senha? <a href="">Clique aqui</a></div>
-                        
-                    </form>
+            <div class="section">
+                <h2>Vida e Mana</h2>
+                <div class="grid-container">
+                    <div class="form-group">
+                        <label for="hp-max">HP Máximo</label>
+                        <input type="number" id="hp-max" min="1" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label for="hp-current">HP Atual</label>
+                        <input type="number" id="hp-current" min="0" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label for="mp-max">MP Máximo</label>
+                        <input type="number" id="mp-max" min="0" value="5">
+                    </div>
+                    <div class="form-group">
+                        <label for="mp-current">MP Atual</label>
+                        <input type="number" id="mp-current" min="0" value="5">
+                    </div>
                 </div>
+            </div>
 
+            <div class="section">
+                <h2>Equipamentos</h2>
+                <div class="form-group">
+                    <label for="weapons">Armas</label>
+                    <textarea id="weapons" placeholder="Liste suas armas aqui..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="items">Itens</label>
+                    <textarea id="items" placeholder="Liste seus itens aqui..."></textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Anotações</h2>
+                <div class="form-group">
+                    <textarea id="notes" placeholder="Faça anotações sobre seu personagem aqui..."></textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Gerenciar Fichas</h2>
+                <div class="grid-container">
+                    <div class="form-group">
+                        <label for="save-name">Nome da Ficha</label>
+                        <input type="text" id="save-name" placeholder="Digite um nome para salvar">
+                    </div>
+                    <div class="form-group">
+                        <label for="saved-characters">Fichas Salvas</label>
+                        <select id="saved-characters">
+                            <option value="">Selecione uma ficha para carregar</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn btn-save" id="save-character">Salvar Ficha</button>
+                    <button class="btn" id="load-character">Carregar Ficha</button>
+                    <button class="btn btn-delete" id="delete-character">Excluir Ficha</button>
+                    <button class="btn btn-export" id="export-character">Exportar JSON</button>
+                    <button class="btn btn-import" id="import-character">Importar JSON</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- fim do modal -->
-    <nav class="navbar navbar-expand-md bg-body-tertiary fixed-top py-3 px-1 shadow-sm">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="index.html">
-                <img src="assets/img/caravan.svg" alt="Logo caravan">
-            </a>
+    <input type="file" id="import-file" accept=".json" style="display: none;">
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+    <script>
+        class CharacterSheet {
+            constructor() {
+                this.init();
+            }
 
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav ms-auto ">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            Locais
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="local.html">California</a></li>
-                            <li><a class="dropdown-item" href="local.html">Paris</a></li>
-                            <li><a class="dropdown-item" href="local.html">Dublin</a></li>
-                        </ul>
-                    </li>
+            init() {
+                this.setupEventListeners();
+                this.loadSavedCharacters();
+            }
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="Produtos.html">Medicamentos</a>
-                    </li>
+            setupEventListeners() {
+                document.getElementById('save-character').addEventListener('click', () => this.saveCharacter());
+                document.getElementById('load-character').addEventListener('click', () => this.loadCharacter());
+                document.getElementById('delete-character').addEventListener('click', () => this.deleteCharacter());
+                document.getElementById('export-character').addEventListener('click', () => this.exportCharacter());
+                document.getElementById('import-character').addEventListener('click', () => this.importCharacter());
+                document.getElementById('import-file').addEventListener('change', (e) => this.handleFileImport(e));
+            }
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="contato.html">Serviços</a>
-                    </li>
+            collectCharacterData() {
+                return {
+                    timestamp: new Date().toISOString(),
+                    name: document.getElementById('character-name').value,
+                    player: document.getElementById('player-name').value,
+                    level: document.getElementById('character-level').value,
+                    xp: document.getElementById('character-xp').value,
+                    hpMax: document.getElementById('hp-max').value,
+                    hpCurrent: document.getElementById('hp-current').value,
+                    mpMax: document.getElementById('mp-max').value,
+                    mpCurrent: document.getElementById('mp-current').value,
+                    weapons: document.getElementById('weapons').value,
+                    items: document.getElementById('items').value,
+                    notes: document.getElementById('notes').value
+                };
+            }
 
-                     <li class="nav-item">
-                        <a class="nav-link" href="contato.html">Fale Conosco</a>
-                    </li>
+            loadCharacterData(data) {
+                document.getElementById('character-name').value = data.name || '';
+                document.getElementById('player-name').value = data.player || '';
+                document.getElementById('character-level').value = data.level || 1;
+                document.getElementById('character-xp').value = data.xp || 0;
+                document.getElementById('hp-max').value = data.hpMax || 10;
+                document.getElementById('hp-current').value = data.hpCurrent || 10;
+                document.getElementById('mp-max').value = data.mpMax || 5;
+                document.getElementById('mp-current').value = data.mpCurrent || 5;
+                document.getElementById('weapons').value = data.weapons || '';
+                document.getElementById('items').value = data.items || '';
+                document.getElementById('notes').value = data.notes || '';
+            }
 
-                    <li class="nav-item ms-5">
-                        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#modalLogin">Acesse sua conta</a>
-                    </li>
+            saveCharacter() {
+                const saveName = document.getElementById('save-name').value.trim();
+                if (!saveName) {
+                    this.showNotification('Digite um nome para salvar a ficha!', 'error');
+                    return;
+                }
 
-                    <li class="nav-item">
-                        <a href="" class="btn btn-outline-primary ms-md-2">Inscreva-se</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <section class="container-fluid">
-        <div class="row bg-dark text-white">
-            <div class="col-lg-7 p-0">
-                <div id="carouselCidades" class="carousel slide" data-bs-ride="carousel">
-                    <div class="carousel-indicators">
-                        <button type="button" data-bs-target="#carouselCidades" data-bs-slide-to="0" class="active"
-                            aria-current="true" aria-label="Slide 1"></button>
-                        <button type="button" data-bs-target="#carouselCidades" data-bs-slide-to="1"
-                            aria-label="Slide 2"></button>
-                        <button type="button" data-bs-target="#carouselCidades" data-bs-slide-to="2"
-                            aria-label="Slide 3"></button>
-                    </div>
-                    <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <img src="assets/img/california.jpg" class="d-block w-100" alt="California">
-                            <div class="carousel-caption d-none d-md-block ">
-                                <h5 class="display-4">California</h5>
-
-                            </div>
-                        </div>
-                        <div class="carousel-item">
-                            <img src="assets/img/paris.jpg" class="d-block w-100" alt="Paris">
-                            <div class="carousel-caption d-none d-md-block">
-                                <h5 class="display-4">Paris</h5>
-
-                            </div>
-                        </div>
-                        <div class="carousel-item">
-                            <img src="assets/img/dublin.jpg" class="d-block w-100" alt="Dublin">
-                            <div class="carousel-caption d-none d-md-block">
-                                <h5 class="display-4">Dublin</h5>
-
-                            </div>
-                        </div>
-                    </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselCidades"
-                        data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselCidades"
-                        data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                    </button>
-                </div>
-            </div>
-            <div class="col-lg-5 p-4 align-self-center">
-                <h1 class="display-4">Realize a viagem dos seus sonhos</h1>
-                <p class="lead">o melhor lugar para viajar é com a caravan, mais de 5.000 excurções concluidas.</p>
-
-                <form action="">
-
-                    <div class="input-group mb-3 input-group-lg">
-                        <input type="text" class="form-control" placeholder="E-mail">
-                        <span class="btn btn-primary">Inscreva-se</span>
-                    </div>
-
-                </form>
-
-            </div>
-        </div>
-    </section>
-
-    <section class="py-5 bg-body-tertiary text-center">
-        <div class="container">
-            <div class="my-5">
-                <span class="h6 d-block">TUDO BOM PARA VOCE</span>
-            </div>
-            <h2 class="display-4 text-primary">Aproveite as Viagens</h2>
-
-            <div class="row">
-                <div class="col-xl-4 col-nd-6">
-                    <div class="d-flex justify-content-center icones">
-                        <img src="assets/img/icones/passagens.svg" alt="Passagens">
-                    </div>
-                    <h3>Passagens</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eos modi, facere, illum at eum officia
-                        necessitatibus reiciendis culpa maiores iure mollitia quam, a perspiciatis provident minus
-                        beatae
-                        officiis laborum atque.</p>
-                </div>
-
-
-                <div class="col-xl-4 col-nd-6">
-                    <div class="d-flex justify-content-center icones">
-                        <img src="assets/img/icones/passaporte.svg" alt="Passaporte">
-                    </div>
-                    <h3>Passaporte</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eos modi, facere, illum at eum officia
-                        necessitatibus reiciendis culpa maiores iure mollitia quam, a perspiciatis provident minus
-                        beatae
-                        officiis laborum atque.</p>
-                </div>
-
-                <div class="col-xl-4 col-nd-6">
-                    <div class="d-flex justify-content-center icones">
-                        <img src="assets/img/icones/translado.svg" alt="Translado">
-                    </div>
-                    <h3>Translado</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eos modi, facere, illum at eum officia
-                        necessitatibus reiciendis culpa maiores iure mollitia quam, a perspiciatis provident minus
-                        beatae
-                        officiis laborum atque.</p>
-                </div>
-
-                <div class="col-xl-4 col-nd-6">
-                    <div class="d-flex justify-content-center icones">
-                        <img src="assets/img/icones/praias.svg" alt="Praias">
-                    </div>
-                    <h3>Praias</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eos modi, facere, illum at eum officia
-                        necessitatibus reiciendis culpa maiores iure mollitia quam, a perspiciatis provident minus
-                        beatae
-                        officiis laborum atque.</p>
-                </div>
-
-                <div class="col-xl-4 col-nd-6">
-                    <div class="d-flex justify-content-center icones">
-                        <img src="assets/img/icones/bagagens.svg" alt="Bagagens">
-                    </div>
-                    <h3>Bagagens</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eos modi, facere, illum at eum officia
-                        necessitatibus reiciendis culpa maiores iure mollitia quam, a perspiciatis provident minus
-                        beatae
-                        officiis laborum atque.</p>
-                </div>
-
-                <div class="col-xl-4 col-nd-6">
-                    <div class="d-flex justify-content-center icones">
-                        <img src="assets/img/icones/turismo.svg" alt="Passagem">
-                    </div>
-                    <h3>Turismo</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eos modi, facere, illum at eum officia
-                        necessitatibus reiciendis culpa maiores iure mollitia quam, a perspiciatis provident minus
-                        beatae
-                        officiis laborum atque.</p>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <section class="home-quote">
-        <figure class="text-center text-white p-md-5 p-3">
-            <blockquote class="blockquote">
-                <p class="display-4">Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                </p>
-            </blockquote>
-            <figcaption class="blockquote-footer text-white pt-3">
-                Someone famous in <cite title="Source Title">Little Runway</cite>
-            </figcaption>
-        </figure>
-    </section>
-
-    <section class="container">
-        <div class="my-5 text-center">
-            <span class="h6 d-block">TUDO BOM PARA VOCE</span>
-            <h2 class="display-4 text-primary">Ainda Com Duvidas?</h2>
-        </div>
-
-
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-
+                const characterData = this.collectCharacterData();
+                const savedCharacters = JSON.parse(localStorage.getItem('elisio_characters') || '{}');
+                savedCharacters[saveName] = characterData;
+                localStorage.setItem('elisio_characters', JSON.stringify(savedCharacters));
                 
+                this.loadSavedCharacters();
+                this.showNotification('Ficha salva com sucesso!', 'success');
+                document.getElementById('save-name').value = '';
+            }
 
+            loadCharacter() {
+                const selectedCharacter = document.getElementById('saved-characters').value;
+                if (!selectedCharacter) {
+                    this.showNotification('Selecione uma ficha para carregar!', 'error');
+                    return;
+                }
 
+                const savedCharacters = JSON.parse(localStorage.getItem('elisio_characters') || '{}');
+                if (savedCharacters[selectedCharacter]) {
+                    this.loadCharacterData(savedCharacters[selectedCharacter]);
+                    this.showNotification('Ficha carregada com sucesso!', 'success');
+                }
+            }
 
-                <p class="d-inline-flex ">
-                    <a class="lead link-underline link-underline-opacity-0 link-underline-opacity-75-hover link-offset-3-hover"
-                        data-bs-toggle="collapse" href="#pergunta2" role="button" aria-expanded="false"
-                        aria-controls="pergunta2">
-                        → Posso comprar remédios controlados online?
-                    </a>
-                </p>
+            deleteCharacter() {
+                const selectedCharacter = document.getElementById('saved-characters').value;
+                if (!selectedCharacter) {
+                    this.showNotification('Selecione uma ficha para excluir!', 'error');
+                    return;
+                }
 
-                <div class="collapse" id="pergunta2">
-                    <div class="card card-body">
-                        Some placeholder content for the collapse component. This panel is hidden by default but
-                        revealed when
-                        the user activates the relevant trigger.
-                    </div>
+                if (confirm('Tem certeza que deseja excluir a ficha "' + selectedCharacter + '"?')) {
+                    const savedCharacters = JSON.parse(localStorage.getItem('elisio_characters') || '{}');
+                    delete savedCharacters[selectedCharacter];
+                    localStorage.setItem('elisio_characters', JSON.stringify(savedCharacters));
+                    
+                    this.loadSavedCharacters();
+                    this.showNotification('Ficha excluída com sucesso!', 'success');
+                }
+            }
 
+            exportCharacter() {
+                const characterData = this.collectCharacterData();
+                const characterName = characterData.name || 'personagem';
+                
+                const dataStr = JSON.stringify(characterData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = characterName + '_elisio_v2.json';
+                link.click();
+                
+                this.showNotification('Ficha exportada com sucesso!', 'success');
+            }
 
-                </div>
-                <div class="border-top mb-3"></div>
+            importCharacter() {
+                document.getElementById('import-file').click();
+            }
 
+            handleFileImport(event) {
+                const file = event.target.files[0];
+                if (!file) return;
 
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        this.loadCharacterData(data);
+                        this.showNotification('Ficha importada com sucesso!', 'success');
+                    } catch (error) {
+                        this.showNotification('Erro ao importar arquivo JSON!', 'error');
+                    }
+                };
+                reader.readAsText(file);
+                event.target.value = '';
+            }
 
+            loadSavedCharacters() {
+                const savedCharacters = JSON.parse(localStorage.getItem('elisio_characters') || '{}');
+                const select = document.getElementById('saved-characters');
+                
+                select.innerHTML = '<option value="">Selecione uma ficha para carregar</option>';
+                
+                Object.keys(savedCharacters).forEach(name => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = name;
+                    select.appendChild(option);
+                });
+            }
 
+            showNotification(message, type) {
+                const existingNotification = document.querySelector('.notification');
+                if (existingNotification) {
+                    existingNotification.remove();
+                }
 
-                <p class="d-inline-flex ">
-                    <a class="lead link-underline link-underline-opacity-0 link-underline-opacity-75-hover link-offset-3-hover"
-                        data-bs-toggle="collapse" href="#pergunta3" role="button" aria-expanded="false"
-                        aria-controls="pergunta3">
-                        → Como funciona a entrega de medicamentos?
-                    </a>
-                </p>
+                const notification = document.createElement('div');
+                notification.className = 'notification ' + type;
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => notification.classList.add('show'), 100);
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+        }
 
-                <div class="collapse" id="pergunta3">
-                    <div class="card card-body">
-                        Some placeholder content for the collapse component. This panel is hidden by default
-                        but
-                        revealed when
-                        the user activates the relevant trigger.
-                    </div>
-
-
-                </div>
-                <div class="border-top mb-3"></div>
-
-
-
-
-
-
-
-                <p class="d-inline-flex ">
-                    <a class="lead link-underline link-underline-opacity-0 link-underline-opacity-75-hover link-offset-3-hover"
-                        data-bs-toggle="collapse" href="#pergunta4" role="button" aria-expanded="false"
-                        aria-controls="pergunta4">
-                        → Aceitam plano de saúde ou convenios?
-                    </a>
-                </p>
-
-                <div class="collapse" id="pergunta4">
-                    <div class="card card-body">
-                        Some placeholder content for the collapse component. This panel is hidden by
-                        default but
-                        revealed when
-                        the user activates the relevant trigger.
-                    </div>
-
-
-                </div>
-                <div class="border-top mb-3"></div>
-
-
-                <p class="d-inline-flex ">
-                    <a class="lead link-underline link-underline-opacity-0 link-underline-opacity-75-hover link-offset-3-hover"
-                        data-bs-toggle="collapse" href="#pergunta5" role="button" aria-expanded="false"
-                        aria-controls="pergunta5">
-                        → Qual prazo de entrega?
-                    </a>
-                </p>
-
-                <div class="collapse" id="pergunta5">
-                    <div class="card card-body">
-                        Some placeholder content for the collapse component. This panel is hidden by
-                        default but
-                        revealed when
-                        the user activates the relevant trigger.
-                    </div>
-
-                </div>
-
-                <div class="border-top mb-3"></div>
-
-
-
-
-
-
-            </div>
-        </div>
-        <div class="text-center my-4">
-            <p class="small m-1">FALE CONOSCO PARA MAIS DUVIDAS</p>
-            <a href="contato.html" class="btn btn-primary btn-lg">Entre em Contato</a>
-        </div>
-    </section>
-
-    <footer class="bg-dark text-white mt-5">
-
-        <div class="container py-4">
-            <div class="row text-center">
-                <div class="col-md-3 col-6">
-                    <h4 class="h6">PAGINAS</h4>
-                    <ul class="list-unstyled">
-                        <li><a href="plano.html" class="text-decoration-none">Medicamentos</a></li>
-                        <li><a href="contato.html" class="text-decoration-none">Cosméticos</a></li>
-                        <li><a href="inscriçao.html" class="text-decoration-none">Linha</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-3 col-6">
-                    <h4 class="h6">LOCAIS</h4>
-                    <ul class="list-unstyled">
-                        <li><a href="local.html" class="text-decoration-none">California</a></li>
-                        <li><a href="local.html" class="text-decoration-none">Paris</a></li>
-                        <li><a href="local.html" class="text-decoration-none">Dublin</a></li>
-                    </ul>
-                </div>
-
-                <div class="col-md-4">
-                    <h4 class="h6">LOCAL</h4>
-                    <ul class="list-unstyled text-secondary">
-                        <li>carava@caravan.com.br</li>
-                        <li> 13 9 9999-9999</li>
-                        <li>De Seg . A sex. das 8h as 18h</li>
-                    </ul>
-                </div>
-
-                <div class="col-md-2">
-                    <h4 class="h6">REDES SOCIAS</h4>
-                    <div class="d-grid gap-2 col-6 mx-auto">
-                        <a href="" class="btn btn-outline-secondary btn-sm">Facebook</a>
-                        <a href="" class="btn btn-outline-secondary btn-sm">Instagram</a>
-                        <a href="" class="btn btn-outline-secondary btn-sm">YouTube</a>
-                    </div>
-                </div>
-
-
-
-            </div>
-        </div>
-
-        <div class="ng-primary text-center py-3">
-            <p class="mb-0">Caravan &copy; 2025. Todos os Direitos Reservados</p>
-        </div>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
-        crossorigin="anonymous"></script>
-    <script src="assets/js/script.js"></script>
+        document.addEventListener('DOMContentLoaded', () => {
+            new CharacterSheet();
+        });
+    </script>
 </body>
-
-</html>
-</body>
-
 </html>
