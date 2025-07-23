@@ -195,6 +195,24 @@
             color: var(--secondary-color);
         }
 
+        .attribute-input {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            background-color: white;
+            text-align: center;
+            width: 60px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px;
+        }
+
+        .attribute-input:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(123, 90, 200, 0.2);
+        }
+
         .skill-list {
             list-style-type: none;
         }
@@ -899,117 +917,86 @@
     </div>
 
     <script>
-        // Função para carregar imagem do personagem
-        document.getElementById('character-image').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const img = document.createElement('img');
-                    img.src = event.target.result;
-                    const characterImage = document.querySelector('.character-image');
-                    characterImage.innerHTML = '';
-                    characterImage.appendChild(img);
-                };
-                reader.readAsDataURL(file);
-            }
-        });
+        // Função de upload de imagem será configurada na inicialização
+
+        // Função para transformar attribute-value em input editável
+        function makeAttributeInputs() {
+            document.querySelectorAll('.attribute-value').forEach(el => {
+                if (el.tagName !== 'INPUT') {
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.min = '1';
+                    input.max = '20';
+                    input.value = el.textContent || '1';
+                    input.className = 'attribute-input';
+                    input.style.width = '60px';
+                    input.style.textAlign = 'center';
+                    input.style.border = '1px solid #ddd';
+                    input.style.borderRadius = '4px';
+                    input.style.padding = '5px';
+                    input.id = el.id;
+                    
+                    input.addEventListener('change', calculateDerivedStats);
+                    el.parentNode.replaceChild(input, el);
+                }
+            });
+        }
 
         // Função para calcular atributos derivados
         function calculateDerivedStats() {
-            // Atualiza valores de atributos
-            document.querySelectorAll('.attribute-value').forEach(el => {
-                const input = document.createElement('input');
-                input.type = 'number';
-                input.min = '0';
-                input.value = el.textContent;
-                input.className = 'attribute-input';
-                input.addEventListener('change', function() {
-                    el.textContent = this.value;
-                    calculateDerivedStats();
-                });
-                el.parentNode.replaceChild(input, el);
-                input.focus();
-            });
-
-            // Calcula HP baseado em classe e vigor
-            const characterClass = document.getElementById('character-class').value;
-            const vigor = parseInt(document.querySelector('#resistance-value').textContent) || 1;
-            const vigorSkill = parseInt(document.querySelector('#resistance-value').parentNode.nextElementSibling.querySelector('.skill-list li:nth-child(2) input').value) || 0;
-            
-            let hpBase = 0;
-            switch(characterClass) {
-                case 'warrior':
-                    hpBase = rollDice(2, 6);
-                    break;
-                case 'berserker':
-                    hpBase = rollDice(3, 8);
-                    break;
-                case 'rogue':
-                    hpBase = rollDice(2, 4);
-                    break;
-                case 'fighter':
-                    hpBase = rollDice(2, 8);
-                    break;
-                case 'archer':
-                    hpBase = rollDice(2, 4);
-                    break;
-                default:
-                    hpBase = rollDice(1, 6);
+            try {
+                // Calcula defesas básicas
+                const armor = 0; // Valor fixo por enquanto
+                const defense = 10 + armor;
+                
+                // Obtém valor do reflexo de forma segura
+                let reflex = 0;
+                const reflexInput = document.querySelector('#agility-value')?.parentNode?.parentNode?.querySelector('.skill-list li:nth-child(5) input');
+                if (reflexInput) {
+                    reflex = parseInt(reflexInput.value) || 0;
+                }
+                
+                // Obtém valor do bloqueio de forma segura
+                let block = 0;
+                const blockInput = document.querySelector('#resistance-value')?.parentNode?.parentNode?.querySelector('.skill-list li:nth-child(1) input');
+                if (blockInput) {
+                    block = parseInt(blockInput.value) || 0;
+                }
+                
+                const dodge = defense + reflex;
+                const counter = defense;
+                const blockValue = armor + block;
+                
+                // Atualiza valores de defesa
+                const defenseEl = document.getElementById('defense-value');
+                const dodgeEl = document.getElementById('dodge-value');
+                const counterEl = document.getElementById('counter-value');
+                const blockEl = document.getElementById('block-value');
+                
+                if (defenseEl) defenseEl.textContent = defense;
+                if (dodgeEl) dodgeEl.textContent = dodge;
+                if (counterEl) counterEl.textContent = counter;
+                if (blockEl) blockEl.textContent = blockValue;
+                
+                // Calcula peso carregado
+                const strengthInput = document.getElementById('strength-value');
+                if (strengthInput) {
+                    const strength = parseInt(strengthInput.value) || 1;
+                    let weightSkill = 0;
+                    const weightInput = strengthInput.parentNode?.parentNode?.querySelector('.skill-list li:nth-child(1) input');
+                    if (weightInput) {
+                        weightSkill = parseInt(weightInput.value) || 0;
+                    }
+                    const maxWeight = 10 + weightSkill;
+                    const carryWeightEl = document.getElementById('carry-weight');
+                    if (carryWeightEl) {
+                        carryWeightEl.placeholder = `0/${maxWeight} kg`;
+                    }
+                }
+                
+            } catch (error) {
+                console.log('Erro no cálculo de stats:', error);
             }
-            
-            const hpMax = hpBase + vigorSkill;
-            document.getElementById('hp-max').value = hpMax;
-            document.getElementById('hp-value').textContent = hpMax;
-            
-            // Calcula MP baseado em classe e armazenamento
-            const manaSkill = parseInt(document.querySelector('#mana-value').parentNode.nextElementSibling.querySelector('.skill-list li:nth-child(3) input').value) || 0;
-            
-            let mpBase = 0;
-            switch(characterClass) {
-                case 'warrior':
-                    mpBase = rollDice(1, 4);
-                    break;
-                case 'berserker':
-                    mpBase = rollDice(1, 4);
-                    break;
-                case 'rogue':
-                    mpBase = rollDice(2, 4);
-                    break;
-                case 'fighter':
-                    mpBase = rollDice(1, 8);
-                    break;
-                case 'archer':
-                    mpBase = rollDice(2, 6);
-                    break;
-                default:
-                    mpBase = rollDice(1, 6);
-            }
-            
-            const mpMax = mpBase + manaSkill;
-            document.getElementById('mp-max').value = mpMax;
-            document.getElementById('mp-value').textContent = mpMax;
-            
-            // Calcula defesas
-            const armor = 0; // Isso deveria vir do equipamento
-            const reflex = parseInt(document.querySelector('#agility-value').parentNode.nextElementSibling.querySelector('.skill-list li:nth-child(5) input').value) || 0;
-            const block = parseInt(document.querySelector('#resistance-value').parentNode.nextElementSibling.querySelector('.skill-list li:nth-child(1) input').value) || 0;
-            
-            const defense = 10 + armor;
-            const dodge = defense + reflex;
-            const counter = defense;
-            const blockValue = armor + block;
-            
-            document.getElementById('defense-value').textContent = defense;
-            document.getElementById('dodge-value').textContent = dodge;
-            document.getElementById('counter-value').textContent = counter;
-            document.getElementById('block-value').textContent = blockValue;
-            
-            // Calcula peso carregado
-            const strength = parseInt(document.querySelector('#strength-value').textContent) || 1;
-            const weightSkill = parseInt(document.querySelector('#strength-value').parentNode.nextElementSibling.querySelector('.skill-list li:nth-child(1) input').value) || 0;
-            const maxWeight = 10 + weightSkill;
-            document.getElementById('carry-weight').placeholder = `0/${maxWeight} kg`;
         }
 
         // Função para rolar dados
@@ -1063,9 +1050,13 @@
             };
 
             // Coleta valores dos atributos
-            document.querySelectorAll('.attribute-value').forEach(el => {
+            document.querySelectorAll('.attribute-value, .attribute-input').forEach(el => {
                 const attributeName = el.id.replace('-value', '');
-                data.attributes[attributeName] = el.textContent;
+                if (el.tagName === 'INPUT') {
+                    data.attributes[attributeName] = el.value;
+                } else {
+                    data.attributes[attributeName] = el.textContent;
+                }
             });
 
             // Coleta valores das habilidades
@@ -1100,7 +1091,11 @@
                 Object.keys(data.attributes).forEach(attr => {
                     const element = document.getElementById(attr + '-value');
                     if (element) {
-                        element.textContent = data.attributes[attr];
+                        if (element.tagName === 'INPUT') {
+                            element.value = data.attributes[attr];
+                        } else {
+                            element.textContent = data.attributes[attr];
+                        }
                     }
                 });
             }
@@ -1255,10 +1250,16 @@
             }
         });
 
-        // Event listeners para atualizar cálculos
-        document.querySelectorAll('select, input').forEach(el => {
-            el.addEventListener('change', calculateDerivedStats);
-        });
+        // Função para adicionar event listeners
+        function addEventListeners() {
+            // Event listeners para atualizar cálculos
+            document.querySelectorAll('select, input[type="number"], input[type="text"]').forEach(el => {
+                if (!el.hasAttribute('data-listener')) {
+                    el.addEventListener('change', calculateDerivedStats);
+                    el.setAttribute('data-listener', 'true');
+                }
+            });
+        }
 
         // Botão de salvar
         document.querySelector('.btn-save').addEventListener('click', saveCharacter);
@@ -1277,19 +1278,11 @@
             window.print();
         });
 
-        // Botão de limpar
-        document.querySelector('.btn-reset').addEventListener('click', function() {
-            if (confirm('Tem certeza que deseja limpar toda a ficha?')) {
-                document.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(el => {
-                    el.value = '';
-                });
-                document.querySelectorAll('select').forEach(el => {
-                    el.selectedIndex = 0;
-                });
-                document.querySelector('.character-image').innerHTML = '<div class="upload-text">Clique para adicionar imagem</div><input type="file" id="character-image" accept="image/*">';
-                
-                // Re-adiciona o event listener para a nova imagem
-                document.getElementById('character-image').addEventListener('change', function(e) {
+        // Função para configurar upload de imagem
+        function setupImageUpload() {
+            const imageInput = document.getElementById('character-image');
+            if (imageInput) {
+                imageInput.addEventListener('change', function(e) {
                     const file = e.target.files[0];
                     if (file) {
                         const reader = new FileReader();
@@ -1303,8 +1296,27 @@
                         reader.readAsDataURL(file);
                     }
                 });
+            }
+        }
+
+        // Botão de limpar
+        document.querySelector('.btn-reset').addEventListener('click', function() {
+            if (confirm('Tem certeza que deseja limpar toda a ficha?')) {
+                document.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(el => {
+                    el.value = '';
+                });
+                document.querySelectorAll('select').forEach(el => {
+                    el.selectedIndex = 0;
+                });
                 
-                calculateDerivedStats();
+                // Reseta imagem
+                document.querySelector('.character-image').innerHTML = '<div class="upload-text">Clique para adicionar imagem</div><input type="file" id="character-image" accept="image/*">';
+                
+                // Re-configura upload de imagem
+                setupImageUpload();
+                
+                // Reinicializa a ficha
+                initializeCharacterSheet();
             }
         });
 
@@ -1318,16 +1330,32 @@
             }
         }, 300000); // 5 minutos
 
-        // Carrega auto-save ao inicializar se existir
-        window.addEventListener('load', function() {
-            const autosave = localStorage.getItem('elisio_autosave');
-            if (autosave && confirm('Foi encontrado um auto-save. Deseja carregar?')) {
-                loadCharacterData(JSON.parse(autosave));
+        // Função de inicialização
+        function initializeCharacterSheet() {
+            makeAttributeInputs();
+            addEventListeners();
+            setupImageUpload();
+            calculateDerivedStats();
+            
+            // Carrega auto-save se existir (só na primeira vez)
+            if (!window.sheetInitialized) {
+                const autosave = localStorage.getItem('elisio_autosave');
+                if (autosave && confirm('Foi encontrado um auto-save. Deseja carregar?')) {
+                    loadCharacterData(JSON.parse(autosave));
+                }
+                window.sheetInitialized = true;
             }
-        });
+        }
 
-        // Inicializa cálculos
-        calculateDerivedStats();
+        // Inicializa quando o DOM estiver carregado
+        document.addEventListener('DOMContentLoaded', initializeCharacterSheet);
+
+        // Fallback para garantir inicialização
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeCharacterSheet);
+        } else {
+            initializeCharacterSheet();
+        }
     </script>
 </body>
 </html>
