@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha de Personagem - Sistema Elisio V2</title>
+    <style>
+        :root {
+            --primary-color: #4a2c82;
+            --secondary-color: #7b5ac8;
+            --accent-color: #e6b31e;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 5px;
+            margin: 20px 0 15px;
+        }
+
+        .character-sheet {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-color);
+        }
+
+        .btn-save { background-color: var(--success-color); }
+        .btn-delete { background-color: var(--danger-color); }
+        .btn-export { background-color: var(--warning-color); color: #333; }
+        .btn-import { background-color: var(--info-color); }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show { transform: translateX(0); }
+        .notification.success { background-color: var(--success-color); }
+        .notification.error { background-color: var(--danger-color); }
+        .notification.info { background-color: var(--info-color); }
+
+        @media (max-width: 768px) {
+            .grid-container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sistema Elisio V2</h1>
+            <p>Ficha de Personagem</p>
+        </header>
+
+        <div class="character-sheet">
+            <div class="section">
+                <h2>Informações Básicas</h2>
+                <div class="grid-container">
+                    <div class="form-group">
+                        <label for="character-name">Nome do Personagem</label>
+                        <input type="text" id="character-name" placeholder="Ex: Aric Blackthorn">
+                    </div>
+                    <div class="form-group">
+                        <label for="player-name">Jogador</label>
+                        <input type="text" id="player-name" placeholder="Seu nome">
+                    </div>
+                    <div class="form-group">
+                        <label for="character-level">Nível</label>
+                        <input type="number" id="character-level" min="1" max="20" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="character-xp">Experiência (XP)</label>
+                        <input type="number" id="character-xp" min="0" value="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Vida e Mana</h2>
+                <div class="grid-container">
+                    <div class="form-group">
+                        <label for="hp-max">HP Máximo</label>
+                        <input type="number" id="hp-max" min="1" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label for="hp-current">HP Atual</label>
+                        <input type="number" id="hp-current" min="0" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label for="mp-max">MP Máximo</label>
+                        <input type="number" id="mp-max" min="0" value="5">
+                    </div>
+                    <div class="form-group">
+                        <label for="mp-current">MP Atual</label>
+                        <input type="number" id="mp-current" min="0" value="5">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Equipamentos</h2>
+                <div class="form-group">
+                    <label for="weapons">Armas</label>
+                    <textarea id="weapons" placeholder="Liste suas armas aqui..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="items">Itens</label>
+                    <textarea id="items" placeholder="Liste seus itens aqui..."></textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Anotações</h2>
+                <div class="form-group">
+                    <textarea id="notes" placeholder="Faça anotações sobre seu personagem aqui..."></textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Gerenciar Fichas</h2>
+                <div class="grid-container">
+                    <div class="form-group">
+                        <label for="save-name">Nome da Ficha</label>
+                        <input type="text" id="save-name" placeholder="Digite um nome para salvar">
+                    </div>
+                    <div class="form-group">
+                        <label for="saved-characters">Fichas Salvas</label>
+                        <select id="saved-characters">
+                            <option value="">Selecione uma ficha para carregar</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn btn-save" id="save-character">Salvar Ficha</button>
+                    <button class="btn" id="load-character">Carregar Ficha</button>
+                    <button class="btn btn-delete" id="delete-character">Excluir Ficha</button>
+                    <button class="btn btn-export" id="export-character">Exportar JSON</button>
+                    <button class="btn btn-import" id="import-character">Importar JSON</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="import-file" accept=".json" style="display: none;">
+
+    <script>
+        class CharacterSheet {
+            constructor() {
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.loadSavedCharacters();
+            }
+
+            setupEventListeners() {
+                document.getElementById('save-character').addEventListener('click', () => this.saveCharacter());
+                document.getElementById('load-character').addEventListener('click', () => this.loadCharacter());
+                document.getElementById('delete-character').addEventListener('click', () => this.deleteCharacter());
+                document.getElementById('export-character').addEventListener('click', () => this.exportCharacter());
+                document.getElementById('import-character').addEventListener('click', () => this.importCharacter());
+                document.getElementById('import-file').addEventListener('change', (e) => this.handleFileImport(e));
+            }
+
+            collectCharacterData() {
+                return {
+                    timestamp: new Date().toISOString(),
+                    name: document.getElementById('character-name').value,
+                    player: document.getElementById('player-name').value,
+                    level: document.getElementById('character-level').value,
+                    xp: document.getElementById('character-xp').value,
+                    hpMax: document.getElementById('hp-max').value,
+                    hpCurrent: document.getElementById('hp-current').value,
+                    mpMax: document.getElementById('mp-max').value,
+                    mpCurrent: document.getElementById('mp-current').value,
+                    weapons: document.getElementById('weapons').value,
+                    items: document.getElementById('items').value,
+                    notes: document.getElementById('notes').value
+                };
+            }
+
+            loadCharacterData(data) {
+                document.getElementById('character-name').value = data.name || '';
+                document.getElementById('player-name').value = data.player || '';
+                document.getElementById('character-level').value = data.level || 1;
+                document.getElementById('character-xp').value = data.xp || 0;
+                document.getElementById('hp-max').value = data.hpMax || 10;
+                document.getElementById('hp-current').value = data.hpCurrent || 10;
+                document.getElementById('mp-max').value = data.mpMax || 5;
+                document.getElementById('mp-current').value = data.mpCurrent || 5;
+                document.getElementById('weapons').value = data.weapons || '';
+                document.getElementById('items').value = data.items || '';
+                document.getElementById('notes').value = data.notes || '';
+            }
+
+            saveCharacter() {
+                const saveName = document.getElementById('save-name').value.trim();
+                if (!saveName) {
+                    this.showNotification('Digite um nome para salvar a ficha!', 'error');
+                    return;
+                }
+
+                const characterData = this.collectCharacterData();
+                const savedCharacters = JSON.parse(localStorage.getItem('elisio_characters') || '{}');
+                savedCharacters[saveName] = characterData;
+                localStorage.setItem('elisio_characters', JSON.stringify(savedCharacters));
+                
+                this.loadSavedCharacters();
+                this.showNotification('Ficha salva com sucesso!', 'success');
+                document.getElementById('save-name').value = '';
+            }
+
+            loadCharacter() {
+                const selectedCharacter = document.getElementById('saved-characters').value;
+                if (!selectedCharacter) {
+                    this.showNotification('Selecione uma ficha para carregar!', 'error');
+                    return;
+                }
+
+                const savedCharacters = JSON.parse(localStorage.getItem('elisio_characters') || '{}');
+                if (savedCharacters[selectedCharacter]) {
+                    this.loadCharacterData(savedCharacters[selectedCharacter]);
+                    this.showNotification('Ficha carregada com sucesso!', 'success');
+                }
+            }
+
+            deleteCharacter() {
+                const selectedCharacter = document.getElementById('saved-characters').value;
+                if (!selectedCharacter) {
+                    this.showNotification('Selecione uma ficha para excluir!', 'error');
+                    return;
+                }
+
+                if (confirm('Tem certeza que deseja excluir a ficha "' + selectedCharacter + '"?')) {
+                    const savedCharacters = JSON.parse(localStorage.getItem('elisio_characters') || '{}');
+                    delete savedCharacters[selectedCharacter];
+                    localStorage.setItem('elisio_characters', JSON.stringify(savedCharacters));
+                    
+                    this.loadSavedCharacters();
+                    this.showNotification('Ficha excluída com sucesso!', 'success');
+                }
+            }
+
+            exportCharacter() {
+                const characterData = this.collectCharacterData();
+                const characterName = characterData.name || 'personagem';
+                
+                const dataStr = JSON.stringify(characterData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = characterName + '_elisio_v2.json';
+                link.click();
+                
+                this.showNotification('Ficha exportada com sucesso!', 'success');
+            }
+
+            importCharacter() {
+                document.getElementById('import-file').click();
+            }
+
+            handleFileImport(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        this.loadCharacterData(data);
+                        this.showNotification('Ficha importada com sucesso!', 'success');
+                    } catch (error) {
+                        this.showNotification('Erro ao importar arquivo JSON!', 'error');
+                    }
+                };
+                reader.readAsText(file);
+                event.target.value = '';
+            }
+
+            loadSavedCharacters() {
+                const savedCharacters = JSON.parse(localStorage.getItem('elisio_characters') || '{}');
+                const select = document.getElementById('saved-characters');
+                
+                select.innerHTML = '<option value="">Selecione uma ficha para carregar</option>';
+                
+                Object.keys(savedCharacters).forEach(name => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = name;
+                    select.appendChild(option);
+                });
+            }
+
+            showNotification(message, type) {
+                const existingNotification = document.querySelector('.notification');
+                if (existingNotification) {
+                    existingNotification.remove();
+                }
+
+                const notification = document.createElement('div');
+                notification.className = 'notification ' + type;
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => notification.classList.add('show'), 100);
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new CharacterSheet();
+        });
+    </script>
+</body>
+</html>
